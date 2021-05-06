@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+  <head>
+    <title>Quizlet</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
+    <link rel="shortcut icon" href="kiwi-bird.png">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
+    <link rel="stylesheet" href="listeningtest.css" type="text/css">
+  </head>
+  <body onload=main(); style="background-color: #E0E8FF">
+    <div class="yet-to-come-container">
+      <div id="header"></div>
+      <select id="quizSelector" name="qselect">
+      </select>
+      <input type="button" value="問題を表示" onClick="showQuestion();">
+      <input type="button" value="解説を表示" onClick="showAnswer();">
+      <div id="qArea"></div>
+    </div>
+
+
+<script>
+// Globals
+const directory = "./resources/";
+const delimOpen = "\\(\\(";
+const delimClose = "\\)\\)";
+const regexp = new RegExp("^(.*?)(" + delimOpen + ")(.+?)(" + delimClose + ")(.*)$", "ms");
+const yaRegexp = /^(\s*)(\S+)(.*)$/ms;
+
+var parmList = null;
+var data;
+var seq = 0;
+var downNo = 0;
+
+function showQuestion() {
+  var qarea = document.getElementById("qArea");
+  while(qarea.firstChild) {
+    qarea.removeChild(qarea.lastChild);
+  }
+  seq = 0;
+  downNo = 0;
+  var qsidx = document.getElementById("quizSelector").value;
+  var text = data["data"][qsidx]["ans"];
+  process(text);
+
+  if (getParm("test") != "yes")
+    openPage(data["data"][qsidx]["qurl"], "question");
+}
+
+function showAnswer() {
+  var qsidx = document.getElementById("quizSelector").value;
+  openPage(data["data"][qsidx]["aurl"], "commentary");
+}
+
+function openPage(url, wname) {
+  window.open(url, wname, "width=600,height=600");
+}
+
+
+function convertItems(parm) {
+  var result = "";
+  while (true) {
+    var tmatch = parm.match(yaRegexp);
+    if (tmatch == null) {
+      break;
+    }
+    result += tmatch[1];
+    seq += 1;
+    var quoteEscape = tmatch[2].replaceAll("'", "\\'");
+    quoteEscape = quoteEscape.replaceAll(/&nbsp;/ig, " ");
+    var chkf = "onBlur=\"festival('" + quoteEscape + "', " + seq + ");\"";
+    result += '<input type="text" id="t' + seq + '" autocomplete="off" size="4" value="" onFocus="this.select();"  onInput="inputChar(' + seq + ');" ' + chkf + '>';
+    result += '<span id="s' + seq + '" style="display:none">';
+    result += tmatch[2];
+    result += '</span>';
+    parm = tmatch[3];
+  }
+  result += parm;
+  return result;
+}
+
+function process(data) {
+  var result = "";
+  while (true) {
+    workChunk = data.match(regexp);
+    if (workChunk == null) {
+      break;
+    }
+    result += workChunk[1];
+    result += convertItems(workChunk[3]);
+    data = workChunk[5];
+  }
+  result += data;
+  result = result.replaceAll("\n", "<br/>");
+  var sentence = document.createElement("p");
+  sentence.innerHTML = result;
+  document.getElementById("qArea").appendChild(sentence);
+}
+
+function festival(wrd, no) {
+  var inp = document.getElementById("t" + no);
+  var i = inp.value.trim();
+  if (i == wrd) {
+    inp.style = "display: none";
+    document.getElementById("s" + no).style = "visibility:visible";
+    downNo += 1;
+    if (downNo >= seq) {
+      alert("Congrats!");
+    }
+  } else if (inp.value == "???") {
+    inp.style = "display: none";
+    document.getElementById("s" + no).style = "visibility: visible;color: red;";
+  }
+}
+
+function inputChar(currentId) {
+  var elem = document.getElementById("t" + currentId);
+  var val = elem.value;
+  if (val == "") return;
+  elem.size = Math.max(val.length, 1);
+}
+
+function getParm(key) {
+  if (parmList == null) {
+    parmList = [];
+    var arg = location.search.substring(1);
+    if (arg != "") {
+      var args = arg.split("&");
+      for(i = 0; i < args.length; i++) {
+        parmPair = args[i].split("=");
+        parmList[parmPair[0]] = parmPair[1];
+      }
+    } else {
+      alert("Hmmm, some parameters are missing...");
+    }
+  }
+  if (key in parmList) {
+    return parmList[key];
+  } else {
+    return "";
+  }
+}
+
+function getData(prefix, filename) {
+  var dpath = prefix + filename + ".json";
+  var req = new XMLHttpRequest();
+  req.open("GET", dpath);
+  req.responseType = "json";
+  req.send();
+  return req;
+}
+
+function processJSON(data) {
+  document.getElementById("header").appendChild(document.createTextNode(data["pagetitle"]));
+  var sl = document.getElementById("quizSelector");
+  var qset = data["data"];
+  for (i = 0; i < qset.length; i++) {
+    var option = document.createElement("option");
+    option.text = qset[i]["label"];
+    option.value = i;
+    sl.appendChild(option);
+  }
+}
+
+function main() {
+  var req = getData(directory, getParm("file"));
+  req.onload = function () {
+    try {
+      data = req.response;
+      processJSON(data);
+    } catch (e) {
+      alert("Error reading JSON file:" + e);
+    }
+  }
+}
+</script>
+  </body>
+</html>
