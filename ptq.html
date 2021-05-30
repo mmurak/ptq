@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
   <head>
-    <title>Populated Twitter Quiz</title>
+    <title>Quizlet</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
     <link rel="shortcut icon" href="kiwi-bird.png">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
@@ -70,7 +70,7 @@ function convertItems(parm) {
     var chkf = "onBlur=\"festival('" + quoteEscape + "', " + seq + ");\"";
     result += '<input type="text" id="t' + seq + '" autocomplete="off" size="4" value="" onFocus="this.select();"  onInput="inputChar(' + seq + ');" ' + chkf + '>';
     result += '<span id="s' + seq + '" style="display:none">';
-    result += tmatch[2];
+//    result += tmatch[2];
     result += '</span>';
     parm = tmatch[3];
   }
@@ -96,18 +96,33 @@ function process(data) {
   document.getElementById("qArea").appendChild(sentence);
 }
 
+function multipleChk(inp, wrd) {
+  var alist = wrd.split(/\|\|/);
+  for (i = 0; i < alist.length; i++) {
+    if (inp == alist[i]) {
+      return true;
+    }
+  }
+  return false;
+}
+
 function festival(wrd, no) {
   var inp = document.getElementById("t" + no);
   var i = inp.value.trim();
-  if (i == wrd) {
+  if (multipleChk(i, wrd)) {
     inp.style = "display: none";
-    document.getElementById("s" + no).style = "visibility:visible";
+    var spantext = document.getElementById("s" + no);
+    spantext.appendChild(document.createTextNode(i));
+    spantext.style = "visibility:visible";
     downNo += 1;
     if (downNo >= seq) {
       alert("Congrats!");
     }
   } else if (inp.value == "???") {
     inp.style = "display: none";
+    var spantext = document.getElementById("s" + no);
+    wrd = wrd.replaceAll(/\|\|/g, "または");
+    spantext.appendChild(document.createTextNode(wrd));
     document.getElementById("s" + no).style = "visibility: visible;color: red;";
   }
 }
