@@ -1,5 +1,5 @@
 ﻿{
-  "pagetitle": "2021年6月分問題",
+  "pagetitle": "2021年6〜7月分問題",
   "data": [
     {
       "label": "6/8",
@@ -36,6 +36,12 @@
       "qurl": "https://twitter.com/takeondo_k/status/1415214781082992643",
       "aurl": "https://twitter.com/takeondo_k/status/1415295012246597633",
       "ans": "((Did anyone call me while I was gone))?"
+    },
+    {
+      "label": "7/15",
+      "qurl": "https://twitter.com/takeondo_k/status/1415403672939286529",
+      "aurl": "https://twitter.com/takeondo_k/status/1415657405241643008",
+      "ans": "((The rumour disappeared soon afterwards and has not been heard of since))."
     }
   ]
 }
