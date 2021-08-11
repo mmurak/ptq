@@ -1,5 +1,5 @@
 ﻿{
-  "pagetitle": "2021年6〜7月分問題",
+  "pagetitle": "2021年6〜8月分問題",
   "data": [
     {
       "label": "6/8",
@@ -42,6 +42,12 @@
       "qurl": "https://twitter.com/takeondo_k/status/1415403672939286529",
       "aurl": "https://twitter.com/takeondo_k/status/1415657405241643008",
       "ans": "((The rumour disappeared soon afterwards and has not been heard of since))."
+    },
+    {
+      "label": "8/12",
+      "qurl": "https://twitter.com/takeondo_k/status/1425342742717034500",
+      "aurl": "https://twitter.com/takeondo_k/status/1425441873825460231",
+      "ans": "David, you are teaching English for Specific Purposes or ESP at the moment. \n((Could you start by telling us what it is))?"
     }
   ]
 }
