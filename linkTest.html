@@ -1,0 +1,58 @@
+<html>
+<head>
+</head>
+<body>
+Page title: <input type="text" id="pagetitle" size="20"><br/>
+menu label: <input type="text" id="label" size="20"><br/>
+Q URL: <input type="text" id="qurl" size="80"><br/>
+A URL: <input type="text" id="aurl" size="80"><br/>
+<textarea id="ans" cols="80" rows="10">
+</textarea><br/>
+<input type="button" value="Add Entry" onClick="register();">
+<a id="osf" href="#" download="data.json" onclick="outFile()">保存はここをクリック</a>
+
+<div id="excerpt"></div>
+
+
+<script>
+var datatree = {};
+var qas = [];
+
+function register() {
+  var rec = {};
+  rec["label"] = document.getElementById("label").value;
+  rec["qurl"] = document.getElementById("qurl").value;
+  rec["aurl"] = document.getElementById("aurl").value;
+  rec["ans"] = document.getElementById("ans").value;
+  qas.push(rec);
+  document.getElementById("excerpt").appendChild(document.createTextNode(document.getElementById("label").value + ":" + document.getElementById("ans").value.substr(0, 80)));
+  document.getElementById("excerpt").appendChild(document.createElement("br"));
+  document.getElementById("label").value = "";
+  document.getElementById("qurl").value = "";
+  document.getElementById("aurl").value = "";
+  document.getElementById("ans").value = "";
+}
+
+
+function openPage() {
+  window.open("https://twitter.com/takeondo_k/status/1385600250199482381", "Q", "width=600,height=600");
+}
+
+function outFile() {
+  datatree["pagetitle"] = document.getElementById("pagetitle").value;
+  datatree["data"] = qas;
+  var contents = JSON.stringify(datatree, null, "  ");
+console.log(contents);
+  var bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+  var blob = new Blob([ bom, contents ], { "type" : "text/plain" });
+  if (window.navigator.msSaveBlob) { 
+    window.navigator.msSaveBlob(blob, "data.json"); 
+    window.navigator.msSaveOrOpenBlob(blob, "data.json"); 
+  } else {
+    document.getElementById("osf").href = window.URL.createObjectURL(blob);
+  }
+}
+
+</script>
+</body>
+</html>
